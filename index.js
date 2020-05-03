@@ -7,13 +7,14 @@ const plot = require('node-remote-plot');
 let { features, labels, testFeatures, testLabels } = loadCsv('./cars.csv', {
   shuffle: true,
   splitTest: 50,
-  dataColumns: ['horsepower', 'displacement', 'weight'],
+  dataColumns: ['horsepower', 'weight', 'displacement'],
   labelColumns: ['mpg']
 });
 
 const regression = new LinearRegression(features, labels, {
   learningRate: 0.1,
-  iterations: 20
+  iterations: 3,
+  batchSize: 10
 });
 
 regression.train();
@@ -24,9 +25,11 @@ regression.train();
 const r2 = regression.test(testFeatures, testLabels);
 
 plot({
-  y: regression.mseHistory.reverse(),
+  x: regression.mseHistory.reverse(),
   xLabel: 'Iteration #',
   yLabel: 'Mean Squared Error'
 });
 
 console.log(`R2 = ${r2}`);
+
+regression.predict([[120, 2, 380]]).print();
